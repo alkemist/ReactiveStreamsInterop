@@ -6,7 +6,6 @@ import akka.stream.scaladsl.{Sink, Source}
 import ratpack.func.Action
 import ratpack.handling.{Context, Handler}
 import ratpack.http.ResponseChunks
-import ratpack.rx.RxRatpack
 import ratpack.test.embed.EmbeddedApp
 import ratpack.test.http.TestHttpClient
 import reactor.rx.Streams
@@ -17,8 +16,6 @@ import scala.collection.JavaConverters._
 object ScalaMain extends App {
   val system = ActorSystem("InteropTest")
   implicit val mat = FlowMaterializer()(system)
-
-  RxRatpack.initialize()
 
   EmbeddedApp.fromHandler(new Handler {
     override def handle(ctx: Context): Unit = {

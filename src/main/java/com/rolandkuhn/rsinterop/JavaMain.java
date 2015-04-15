@@ -6,7 +6,6 @@ import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import org.reactivestreams.Publisher;
 import ratpack.http.ResponseChunks;
-import ratpack.rx.RxRatpack;
 import ratpack.test.embed.EmbeddedApp;
 import reactor.rx.Stream;
 import reactor.rx.Streams;
@@ -17,7 +16,6 @@ public class JavaMain {
   public static void main(String... args) throws Exception {
     ActorSystem system = ActorSystem.create("InteropTest");
     FlowMaterializer mat = FlowMaterializer.create(system);
-    RxRatpack.initialize();
 
     EmbeddedApp.fromHandler(ctx -> {
       final Integer[] ints = new Integer[10];
@@ -37,7 +35,7 @@ public class JavaMain {
       // and now render the HTTP response
       ctx.render(ResponseChunks.stringChunks(linesStream));
     }).test(client ->
-      System.out.println(client.getText())
+            System.out.println(client.getText())
     );
   }
 }
