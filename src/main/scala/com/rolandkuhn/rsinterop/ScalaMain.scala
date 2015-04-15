@@ -1,28 +1,25 @@
 package com.rolandkuhn.rsinterop
 
-import ratpack.rx.RxRatpack
-import ratpack.test.embed.EmbeddedApp
-import ratpack.handling.Handler
-import ratpack.handling.Context
-import rx.Observable
-import scala.collection.JavaConverters._
-import akka.stream.scaladsl.Flow
-import akka.stream.scaladsl.Source
-import rx.RxReactiveStreams
-import akka.stream.scaladsl.Sink
 import akka.actor.ActorSystem
 import akka.stream.FlowMaterializer
+import akka.stream.scaladsl.{Sink, Source}
+import ratpack.func.Action
+import ratpack.handling.{Context, Handler}
 import ratpack.http.ResponseChunks
-import java.util.function.Consumer
+import ratpack.rx.RxRatpack
+import ratpack.test.embed.EmbeddedApp
 import ratpack.test.http.TestHttpClient
 import reactor.rx.Streams
+import rx.{Observable, RxReactiveStreams}
+
+import scala.collection.JavaConverters._
 
 object ScalaMain extends App {
   val system = ActorSystem("InteropTest")
   implicit val mat = FlowMaterializer()(system)
-  
+
   RxRatpack.initialize()
-  
+
   EmbeddedApp.fromHandler(new Handler {
     override def handle(ctx: Context): Unit = {
       // RxJava Observable
@@ -40,11 +37,9 @@ object ScalaMain extends App {
       // and now render the HTTP response
       ctx.render(ResponseChunks.stringChunks(linesStream))
     }
-  }).test(new Consumer[TestHttpClient] {
-    override def accept(client: TestHttpClient): Unit = {
-      val text = client.getText()
-      println(text)
-      system.shutdown()
+  }).test(new Action[TestHttpClient] {
+    override def execute(client: TestHttpClient): Unit = {
+      println(client.getText())
     }
   })
 }
